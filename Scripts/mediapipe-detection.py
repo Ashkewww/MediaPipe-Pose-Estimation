@@ -48,9 +48,7 @@ def detectPose():
                 
                 cv2.imshow("Mediapipe Window",image)
                 
-                if (cv2.waitKey(10) & 0xFF == ord('q')) or stopServer.is_set():
-                    if stopServer.is_set() != True:
-                        stopServer.set()
+                if (cv2.waitKey(10) & 0xFF == ord('q')):
                     break
 
             cap.release()
@@ -66,8 +64,6 @@ async def mainServer(websocket, path):
     global response
     global stopServer
     while True:
-        if stopServer.is_set():
-            break
         if response != None:
             await websocket.send(response)
             response = None
@@ -77,7 +73,7 @@ async def mainServer(websocket, path):
 if "__main__" == __name__:
     try:
         stopServer == False
-        detectPoseThread = threading.Thread(target=detectPose)
+        detectPoseThread = threading.Thread(target=detectPose, daemon=True)
         detectPoseThread.start()
         
         start_server = serve(mainServer, "localhost", 6969)
@@ -85,8 +81,6 @@ if "__main__" == __name__:
         asyncio.get_event_loop().run_until_complete(start_server)
         asyncio.get_event_loop().run_forever()
     except KeyboardInterrupt:
-        stopServer.set()
-        time.sleep(1)
         print("LOG::Server has been stopped")
               
 
