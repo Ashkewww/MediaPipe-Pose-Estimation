@@ -1,7 +1,7 @@
 import mediapipe as mp
 import asyncio, websockets, threading, json, cv2, time
 from websockets.server import serve
-from helper import landmark_to_json_per_frame
+from helper import landmark_to_json_per_frame, person_not_found_status
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 
@@ -33,10 +33,11 @@ def detectPose():
                 image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
                 try:
-                    response = json.dumps(landmark_to_json_per_frame(results.pose_landmarks.landmark, i))
+                    response = landmark_to_json_per_frame(results.pose_landmarks.landmark, i)
                     print(f"LOG::Frame Detection Success::Time taken by frame{i}:", timeTakenForFrame)
                     i += 1
                 except:
+                    response = person_not_found_status()
                     print("LOG::No Person Detected")
                 
                 mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,

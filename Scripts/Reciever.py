@@ -6,11 +6,11 @@ from websockets.sync.client import connect
 def hello():
     with connect("ws://localhost:6969") as websocket:
         while True:
-            message = None
-            message = websocket.recv()
-            if message != None:
-                pro = json.loads(message)
-                print(pro['frameNumber'])
+            message = json.loads(websocket.recv())
+            if message['status'] == 'Failure':
+                print("Person not found")
+            else:
+                print("Data is being recieved")
             asyncio.wait(1/15)
         
 
