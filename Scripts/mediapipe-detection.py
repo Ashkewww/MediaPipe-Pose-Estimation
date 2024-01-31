@@ -1,5 +1,5 @@
 import mediapipe as mp
-import asyncio, websockets, threading, json, cv2, time
+import asyncio, threading, cv2, time
 from websockets.server import serve
 from helper import landmark_to_json_per_frame, person_not_found_status
 mp_drawing = mp.solutions.drawing_utils
@@ -63,7 +63,6 @@ def detectPose():
         
 async def mainServer(websocket, path):
     global response
-    global stopServer
     while True:
         if response != None:
             await websocket.send(response)
